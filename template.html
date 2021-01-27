@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Free samples, loops and drum packs by August Berlin</title>
+    <meta name="description" content="Basic HTML boilerplate" />
+    <meta name="author" content="August Berlin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="static/styles.css" />
+</head>
+
+<body>
+    <header>
+        <img src="static/august_berlin_512.jpg" />
+        <h1>August Berlin's Sample Packs</h1>
+        <div>
+            <a href="https://www.instagram.com/augustberlin91/">follow me on instagram</a>
+        </div>
+    </header>
+    <main>
+        <h2>Free samples, loops and drum packs</h2>
+        <p>
+            Welcome to my site where you can directly download high quality sample
+            packs without login, registering or submitting your e-mail.
+        </p>
+        <div class="packs">
+            <div class="pack">
+                <h3>Analog Hiphop #1</h3>
+                <div class="icon-and-desc">
+                    <img class="icon" src="static/hiphop1_200.jpg" />
+                    <p class="desc pad">
+                        Collection of analog sounds created using hardware analog synths:
+                        Circuit Mono Station and Arturia DrumBrute Impact. The pack
+                        contains xx loops and xx one-shots, with a
+                        <strong>total of xx .wav files</strong>. Including kicks, snares,
+                        hihats, basses, melodies, effects and more. All for free.
+                    </p>
+                </div>
+                <div class="preview pad">
+                    <span class="pad">Listen to preview:</span> <br />
+                    <audio controls>
+                        <source src="1-preview.mp3" type="audio/mpeg" />
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+                <div class="download">
+                    <form method="POST" action="/download">
+                        <input type="submit" value="Download the pack">
+                    </form>
+                    <small>(downloads: {{.PackOneDownloads}})</small>
+                </div>
+            </div>
+        </div>
+        <footer></footer>
+    </main>
+</body>
+
+</html>

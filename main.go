@@ -7,9 +7,8 @@ import (
 	"database/sql"
     _ "github.com/jackc/pgx/v4/stdlib"
 	"os"
+	"html/template"
 )
-
-
 
 var (
 	dbUser                 = mustGetenv("DB_USER")                  // e.g. 'my-db-user'
@@ -23,56 +22,48 @@ type packInfo struct {
 	title string
 	downloads int
 }
+
+type templateData struct {
+	PackOneDownloads int
+}
  
 func main() {
 	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
 	if !isSet {
 			socketDir = "/cloudsql"
 	}
-	
 	var dbURI string
 	dbURI = fmt.Sprintf("user=%s password=%s database=%s host=%s/%s", dbUser, dbPwd, dbName, socketDir, instanceConnectionName)
-	
-	// dbPool is the pool of database connections.
 	dbPool, err := sql.Open("pgx", dbURI)
 	checkError(err)
 
 	rows, err := dbPool.Query(`SELECT "id", "title", "downloads" FROM "downloads";`)
 	checkError(err)
-	
 	defer rows.Close()
-
 	var packs []packInfo;
-
 	for rows.Next() {
 		var id int
 		var title string
 		var downloads int
-	
 		err = rows.Scan(&id, &title, &downloads)
 		checkError(err)
-	
-		packs = append(packs, packInfo{id, title, downloads})
-		//fmt.Println(name, downloads)
+		packs = append(packs, packInfo{id: id, title: title, downloads: downloads})
 	}
 
+	fs := http.FileServer(http.Dir("assets/"))
+    http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request)  {
-
-		var html []byte
-
-		for _, pack := range(packs) {
-			html = append(html, []byte("hello world ")...)
-			html = append(html, []byte(pack.title)...)
-		}
-
-		w.Write(html)
+		packOneDownloads := packs[0].downloads
+		tmpl := template.Must(template.ParseFiles("template.html"))
+		data := templateData{PackOneDownloads: packOneDownloads}
+		tmpl.Execute(w, data)
 	})
 	fmt.Print("listening on localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
-
 
 func getDownloads(title string) (downloads int) {
 	return 0

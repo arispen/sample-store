@@ -1,0 +1,95 @@
+body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    margin: 0 auto;
+}
+
+main {
+    max-width: 50em;
+    line-height: 1.5;
+    padding: 4em 1em;
+    color: #555;
+    margin: 0 auto;
+}
+
+header {
+    background-color: #333;
+    background-image: url("header.jpg");
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    line-height: 1.2;
+    padding: 10vw 2em;
+    text-align: center;
+}
+
+header img {
+    display: inline-block;
+    height: 120px;
+    vertical-align: top;
+    width: 120px;
+}
+
+header h1 {
+    color: white;
+    font-size: 2.5em;
+    font-weight: 300;
+}
+
+header a {
+    border: 1px solid #ffdc00;
+    border-radius: 290486px;
+    color: white;
+    font-size: 0.6em;
+    letter-spacing: 0.2em;
+    padding: 1em 2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: none 200ms ease-out;
+    transition-property: color, background;
+}
+
+header a:hover {
+    background: #ffdc00;
+    color: black;
+}
+
+a {
+    color: #ff851b;
+}
+
+aside {
+    float: right;
+}
+
+h2,
+h3 {
+    margin-top: 1em;
+    padding-top: 1em;
+}
+
+h1,
+h2,
+strong {
+    color: #333;
+}
+
+.pad {
+    padding: 20px;
+}
+
+.pack {
+    margin-top: 40px;
+}
+
+.icon-and-desc {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.icon {
+    border: 2px solid #555;
+}
+
+.desc {
+    max-width: 500px;
+}
