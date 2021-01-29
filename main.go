@@ -4,18 +4,12 @@ import (
 	"log"
 	"net/http"
 	"fmt"
-	"database/sql"
     _ "github.com/jackc/pgx/v4/stdlib"
 	"os"
 	"html/template"
 )
 
-var (
-	dbUser                 = mustGetenv("DB_USER")                  // e.g. 'my-db-user'
-	dbPwd                  = mustGetenv("DB_PASS")                  // e.g. 'my-db-password'
-	instanceConnectionName = mustGetenv("INSTANCE_CONNECTION_NAME") // e.g. 'project:region:instance'
-	dbName                 = mustGetenv("DB_NAME")                  // e.g. 'my-database'
-)
+
 
 type packInfo struct {
 	id int
@@ -28,17 +22,16 @@ type templateData struct {
 }
  
 func main() {
-	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
-	if !isSet {
-			socketDir = "/cloudsql"
-	}
-	var dbURI string
-	dbURI = fmt.Sprintf("user=%s password=%s database=%s host=%s/%s", dbUser, dbPwd, dbName, socketDir, instanceConnectionName)
-	dbPool, err := sql.Open("pgx", dbURI)
-	checkError(err)
 
-	rows, err := dbPool.Query(`SELECT "id", "title", "downloads" FROM "downloads";`)
-	checkError(err)
+	db, err := InitializeDatabaseConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := db.Query(`SELECT "id", "title", "downloads" FROM "downloads";`)
+	if err != nil {
+        log.Fatal(err)
+    }
 	defer rows.Close()
 	var packs []packInfo;
 	for rows.Next() {
@@ -46,7 +39,9 @@ func main() {
 		var title string
 		var downloads int
 		err = rows.Scan(&id, &title, &downloads)
-		checkError(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 		packs = append(packs, packInfo{id: id, title: title, downloads: downloads})
 	}
 
@@ -59,6 +54,8 @@ func main() {
 		data := templateData{PackOneDownloads: packOneDownloads}
 		tmpl.Execute(w, data)
 	})
+	http.HandleFunc("/download", DownloadHandler)
+
 	fmt.Print("listening on localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -67,12 +64,6 @@ func main() {
 
 func getDownloads(title string) (downloads int) {
 	return 0
-}
-
-func checkError(err error) {
-    if err != nil {
-        panic(err)
-    }
 }
 
 // mustGetEnv is a helper function for getting environment variables.
