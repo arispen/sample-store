@@ -9,8 +9,6 @@ import (
 	"html/template"
 )
 
-
-
 type packInfo struct {
 	id int
 	title string
@@ -22,33 +20,32 @@ type templateData struct {
 }
  
 func main() {
-
-	db, err := InitializeDatabaseConnection()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	rows, err := db.Query(`SELECT "id", "title", "downloads" FROM "downloads";`)
-	if err != nil {
-        log.Fatal(err)
-    }
-	defer rows.Close()
-	var packs []packInfo;
-	for rows.Next() {
-		var id int
-		var title string
-		var downloads int
-		err = rows.Scan(&id, &title, &downloads)
-		if err != nil {
-			log.Fatal(err)
-		}
-		packs = append(packs, packInfo{id: id, title: title, downloads: downloads})
-	}
-
 	fs := http.FileServer(http.Dir("assets/"))
     http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", func (w http.ResponseWriter, r *http.Request)  {
+		// TODO: move db init out of handlers
+		db, err := InitializeDatabaseConnection()
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
+		rows, err := db.Query("SELECT id, title, downloads FROM downloads;")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+		var packs []packInfo;
+		for rows.Next() {
+			var id int
+			var title string
+			var downloads int
+			err = rows.Scan(&id, &title, &downloads)
+			if err != nil {
+				log.Fatal(err)
+			}
+			packs = append(packs, packInfo{id: id, title: title, downloads: downloads})
+		}
 		packOneDownloads := packs[0].downloads
 		tmpl := template.Must(template.ParseFiles("template.html"))
 		data := templateData{PackOneDownloads: packOneDownloads}
