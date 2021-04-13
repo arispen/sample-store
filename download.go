@@ -4,9 +4,6 @@ import (
 	"log"
 	"net/http"
 )
-// TODO:
-// 1. increment downloads count by 1
-// 2. respond with .zip
 
 // DownloadHandler handles download route
 func DownloadHandler(w http.ResponseWriter, r *http.Request) {
