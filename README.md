@@ -1,3 +1,3 @@
 # sample-store
 
-website to sell music samples
+website with music sample downloads
